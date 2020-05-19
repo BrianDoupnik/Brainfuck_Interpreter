@@ -22,8 +22,8 @@ class cpu
             dc = dataSize / 2;
 
             programMemory = new char[programSize];
-            cin >> programMemory;
-            dataMemory = new int[dataSize];
+            cin.getline(programMemory, programSize, '\n');
+            dataMemory = new int[dataSize] {0};
         }
         void deallocateMemory()
         {
@@ -35,7 +35,10 @@ class cpu
 int main()
 {
     cpu * c = new cpu();
-    c->allocateMemory(100, 50);
+    c->allocateMemory(1000, 30000);
+
+    int myStack[1000]{ 0 };
+    int myStackIndex = 1;
 
     while (c->pc < c->programSize)
     {
@@ -44,25 +47,40 @@ int main()
         switch (input)
         {
             case '+':
-                c->dataMemory[c->dc]++;
+                ++(c->dataMemory[c->dc]);
+                //cerr << c->dataMemory[c->dc] << endl;
                 break;
             case '-':
-                c->dataMemory[c->dc]--;
+                --(c->dataMemory[c->dc]);
+                //cerr << c->dataMemory[c->dc] << endl;
                 break;
             case '<':
                 c->dc--;
+                //cerr << c->dataMemory[c->dc] << endl;
                 break;
             case '>':
                 c->dc++;
+                //cerr << c->dataMemory[c->dc] << endl;
                 break;
             case '.':
                 cout << (char)c->dataMemory[c->dc];
                 break;
             case ',':
-                char test;
-                cin >> test;
-                c->dataMemory[c->dc] = test;
-            default:
+                char inchar;
+                cin >> inchar;
+                c->dataMemory[c->dc] = (int)inchar;
+                break;
+            case '[':
+                myStackIndex++;
+                myStack[myStackIndex] = c->pc;
+                break;
+            case ']':
+                if (c->dataMemory[c->dc] > 0 && myStackIndex >= 0)
+                {
+                    c->pc = myStack[myStackIndex];
+                }
+                else
+                    myStackIndex--;
                 break;
         }
         c->pc++;
