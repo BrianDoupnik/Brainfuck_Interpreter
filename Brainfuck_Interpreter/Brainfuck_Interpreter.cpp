@@ -1,9 +1,10 @@
-// Brainfuck_Interpreter.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
+// this program is an interpreter for the language known as brainfuck.  the only characters that mean anything are <>_+[],.
+// it recieves the program input from the command line at the beginning, then data input and output occur on the commandline afterwards.
 
 #include <iostream>
 using namespace std;
 
+// cpu class for modular structure
 class cpu
 {
     public:
@@ -32,48 +33,57 @@ class cpu
         }
 };
 
+// actual interpreter
 int main()
 {
+    // allocate cpu memory and stack for loops
     cpu * c = new cpu();
     c->allocateMemory(1000, 30000);
 
     int myStack[1000]{ 0 };
     int myStackIndex = 1;
 
+    // for every character in the program
     while (c->pc < c->programSize)
     {
+        // get the character
         char input = c->programMemory[c->pc];
         
+        // determine what we should do
         switch (input)
         {
+            // increment the current value
             case '+':
                 ++(c->dataMemory[c->dc]);
-                //cerr << c->dataMemory[c->dc] << endl;
                 break;
+            // decrement the current value
             case '-':
                 --(c->dataMemory[c->dc]);
-                //cerr << c->dataMemory[c->dc] << endl;
                 break;
+            // move left one space
             case '<':
                 c->dc--;
-                //cerr << c->dataMemory[c->dc] << endl;
                 break;
+            // move right one space
             case '>':
                 c->dc++;
-                //cerr << c->dataMemory[c->dc] << endl;
                 break;
+            // print output
             case '.':
                 cout << (char)c->dataMemory[c->dc];
                 break;
+            // recieve input
             case ',':
                 char inchar;
                 cin >> inchar;
                 c->dataMemory[c->dc] = (int)inchar;
                 break;
+            // begin loop
             case '[':
                 myStackIndex++;
                 myStack[myStackIndex] = c->pc;
                 break;
+            // end loop
             case ']':
                 if (c->dataMemory[c->dc] > 0 && myStackIndex >= 0)
                 {
@@ -83,20 +93,14 @@ int main()
                     myStackIndex--;
                 break;
         }
+        // move to next instruction
         c->pc++;
     }
 
+    // deallocate memory allocated using (new)
     c->deallocateMemory();
     delete(c);
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
 // Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
