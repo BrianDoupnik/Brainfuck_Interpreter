@@ -1,2 +1,2 @@
 # Brainfuck_Interpreter
-An interpreter for brainfuck written in c++
+An interpreter for the brainfuck programming language written in c++
